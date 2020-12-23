@@ -3,21 +3,38 @@ import { FaCode } from "react-icons/fa";
 import { API_URL, API_KEY, IMAGE_BASE_URL } from '../../Config';
 import MainImage from "./Sections/MainImage";
 import GridCards from "../commons/GridCards";
-import { Row } from 'antd';
+import { Row, Typography } from 'antd';
+
+const { Title } = Typography;
 
 function LandingPage() {
     const [movies, setMovies] = useState([]);
     const [mainMovieImage, setMainMovieImage] = useState(null);
+    const [currentPage, setCurrentPage] = useState(0);
+
     useEffect(() => {
         const endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=ko&page=1`;
+        fetchMovies(endpoint);
+    }, []);
+
+    const fetchMovies = (endpoint) => {
         fetch(endpoint)
             .then(response => response.json())
             .then(response => {
                 console.log(response);
-                setMovies([...response.results]);
-                setMainMovieImage(response.results[0]);
-            });
-    }, []);
+                setMovies([...movies, ...response.results]);
+                setMainMovieImage(mainMovieImage || response.results[0]);
+                setCurrentPage(response.page);
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    const loadMoreItems = () => {
+        let endpoint = '';
+        endpoint = `${API_URL}movie/popular?api_key=${API_KEY}&language=ko&page=${currentPage + 1}`;
+        fetchMovies(endpoint);
+    }
+
     return (
         <div style={{ width: '100%', margin: '0' }}>
             {/* Main Image */}
@@ -29,9 +46,8 @@ function LandingPage() {
             />
             }
             <div style={{ width: '85%', margin: '1rem auto' }}>
-                <h2>Movies by latest</h2>
+                <Title level={2}>Movies by latest</Title>
                 <hr/>
-
                 {/* Movie grid Cards */}
                 <Row gutter={[16, 16]}>
                 {movies && movies.map((movie, index) => (
@@ -47,7 +63,7 @@ function LandingPage() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <button>Load More</button>
+                <button onClick={loadMoreItems}>Load More</button>
             </div>
         </div>
     )
