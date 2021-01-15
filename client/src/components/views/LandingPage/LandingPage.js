@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import { FaCode } from "react-icons/fa";
 import { API_URL, API_KEY, IMAGE_BASE_URL } from '../../Config';
-import MainImage from "./Sections/MainImage";
+import MainImage from "../commons/MainImage";
 import GridCards from "../commons/GridCards";
 import { Row, Typography } from 'antd';
 
@@ -53,6 +53,7 @@ function LandingPage() {
                 {movies && movies.map((movie, index) => (
                     <React.Fragment key={index}>
                         <GridCards
+                            landingPage
                             image={movie.poster_path ? `${IMAGE_BASE_URL}w500${movie.poster_path}` : null}
                             movieId={movie.id}
                             movieName={movie.original_title}
